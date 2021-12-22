@@ -2,8 +2,8 @@ pragma solidity 0.6.12;
 
 import "./libs/BEP20.sol";
 
-// LightDragonToken with Governance.
-contract LightDragonToken is BEP20('Light Dragon', 'LTDRAG') {
+// LightDragonV2Token with Governance.
+contract LightDragonV2Token is BEP20('Light Dragon Ver2', 'LTDRAG2') {
     /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (MasterChef).
     function mint(address _to, uint256 _amount) public onlyOwner {
         _mint(_to, _amount);
@@ -112,9 +112,9 @@ contract LightDragonToken is BEP20('Light Dragon', 'LTDRAG') {
         );
 
         address signatory = ecrecover(digest, v, r, s);
-        require(signatory != address(0), "LTDRAGdelegateBySig: invalid signature");
-        require(nonce == nonces[signatory]++, "LTDRAGdelegateBySig: invalid nonce");
-        require(now <= expiry, "LTDRAGdelegateBySig: signature expired");
+        require(signatory != address(0), "LTDRAG2::delegateBySig: invalid signature");
+        require(nonce == nonces[signatory]++, "LTDRAG2::delegateBySig: invalid nonce");
+        require(now <= expiry, "LTDRAG2::delegateBySig: signature expired");
         return _delegate(signatory, delegatee);
     }
 
@@ -144,7 +144,7 @@ contract LightDragonToken is BEP20('Light Dragon', 'LTDRAG') {
         view
         returns (uint256)
     {
-        require(blockNumber < block.number, "LTDRAGgetPriorVotes: not yet determined");
+        require(blockNumber < block.number, "LTDRAG2::getPriorVotes: not yet determined");
 
         uint32 nCheckpoints = numCheckpoints[account];
         if (nCheckpoints == 0) {
@@ -181,7 +181,7 @@ contract LightDragonToken is BEP20('Light Dragon', 'LTDRAG') {
         internal
     {
         address currentDelegate = _delegates[delegator];
-        uint256 delegatorBalance = balanceOf(delegator); // balance of underlying LTDRAGs (not scaled);
+        uint256 delegatorBalance = balanceOf(delegator); // balance of underlying LTDRAG2s (not scaled);
         _delegates[delegator] = delegatee;
 
         emit DelegateChanged(delegator, currentDelegate, delegatee);
@@ -217,7 +217,7 @@ contract LightDragonToken is BEP20('Light Dragon', 'LTDRAG') {
     )
         internal
     {
-        uint32 blockNumber = safe32(block.number, "LTDRAG_writeCheckpoint: block number exceeds 32 bits");
+        uint32 blockNumber = safe32(block.number, "LTDRAG2::_writeCheckpoint: block number exceeds 32 bits");
 
         if (nCheckpoints > 0 && checkpoints[delegatee][nCheckpoints - 1].fromBlock == blockNumber) {
             checkpoints[delegatee][nCheckpoints - 1].votes = newVotes;
